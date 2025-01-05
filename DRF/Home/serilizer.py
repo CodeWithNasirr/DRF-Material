@@ -18,13 +18,34 @@ class Student_Serialiser(serializers.ModelSerializer):
 
     def calculate_age(self,instance):
         current_date=datetime.now()
-        age=current_date.year-instance.year
+        age = current_date.year - instance.year
         return age
     
     def to_representation(self, instance):
         data= super().to_representation(instance)
         data['age']=self.calculate_age(instance.dob)
         return data
+
+    def create(self, validated_data):# its same as #Custom Serilizer Method we use 
+        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):# its same as #Custom Serilizer Method we use 
+        return super().update(instance, validated_data)
+
+    def to_internal_value(self, data):
+        data = super().to_internal_value(data)
+        if 'name' in data:
+            data['name']=data['name'].strip().title()
+        print(data['name'])
+        return data
+    
+    def get_fields(self):# ye yaha per isliye use horaha jese koi user login karta hai to uska password show nahi hona chahiye
+        field = super().get_fields()
+        authenticate=True
+        if authenticate:
+            field.pop('password')
+        return field
+
 
 #Custom Serilizer Method
 # class Student_Serialiser(serializers.Serializer):
