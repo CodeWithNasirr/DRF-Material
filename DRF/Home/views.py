@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.http import JsonResponse
 from .models import Licence_Keys,student
-from Home.serilizer import Licence_key_Serializers,Student_Serialiser
+from Home.serilizer import Licence_key_Serializers,Student_Serialiser,User_Serilizer
 # Create your views here.
 @api_view(['GET'])
 def index(request):
@@ -113,6 +113,23 @@ def delete_records(request):
         'status':True,
         'Message':'Record Deleted'
     })
+
+
+@api_view(["POST"])
+def create_user(request):
+    data=request.data
+    serilizer=User_Serilizer(data=data)
+    if not serilizer.is_valid():
+        return Response({
+            'status':False,
+            'Messsage':'Record Not Created',
+            "error":serilizer.errors,
+        })
+    return  Response({
+        'status':True,
+        "data":serilizer.data,
+    })
+
 
 
 

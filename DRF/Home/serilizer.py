@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Licence_Keys,student
 from datetime import datetime
-
+from Home.validater import no_number
 class Licence_key_Serializers(serializers.ModelSerializer):
     class Meta:
         model=Licence_Keys
@@ -78,3 +78,43 @@ class Student_Serialiser(serializers.ModelSerializer):
 #     def create(self, validated_data):
 #         Student=student.objects.create(**validated_data)
 #         return Student
+
+
+from rest_framework.validators import UniqueValidator
+class User_Serilizer(serializers.Serializer):
+    name=serializers.CharField(max_length=100,validators=[UniqueValidator(queryset=student.objects.all()),no_number])
+    email=serializers.EmailField()
+    age=serializers.IntegerField()
+    user_type=serializers.ChoiceField(choices=['admin','user'])#it will show the choice in the dropdown
+    admin_code=serializers.CharField(max_length=100,required=False)
+    
+
+
+    def validate(self, value):#here we can write all logic in one validate function
+        # if 'email' in value and value['email'].split['@']=='gmail.com':
+        #     raise serializers.ValidationError("Please Enter the Aycha  Email")
+        
+
+        if 'user_type' in value and value['user_type']=='admin' and 'admin_code' not in value:
+            raise serializers.ValidationError("Admin code is required for admin user")
+
+
+        if 'age' in value and value['age'] < 18 or value['age'] > 30:
+            raise serializers.ValidationError("Age should be between 18 to 30")
+        
+
+        return value    
+
+
+
+    def validate_age(self, value):#This is custom ValidATOR
+        if value < 18 or value > 30:
+            raise serializers.ValidationError("Age should be between 18 to 30")
+        return value
+    
+    # def validate_email(self,value):
+    #     if value.split['@']=='gmail.com':
+    #         raise serializers.ValidationError("Please Enter the Aycha  Email")
+    #     return value
+    
+    

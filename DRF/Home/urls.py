@@ -1,5 +1,5 @@
 from django.urls import path,include
-from .views import index,create_records,get_records,delete_records,subscribe_key,update_records,ValidateKeyView,create_student,get_student,update_student
+from .views import index,create_records,get_records,delete_records,subscribe_key,update_records,ValidateKeyView,create_student,get_student,update_student,create_user
 urlpatterns = [
     path("api/",index,name="index"),
     path("api/subscribe_key",subscribe_key,name="subscribe_key"),
@@ -11,5 +11,7 @@ urlpatterns = [
     path('api/create_student', create_student, name='create_book'),
     path('api/get_student', get_student, name='get_books'),
     path('api/update_student', update_student, name='update_book'),
+    path('api/create_user', create_user, name='create_users'),
+
 
 ] 
