@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Licence_Keys,student
+from .models import *
 from datetime import datetime
 from Home.validater import no_number
 class Licence_key_Serializers(serializers.ModelSerializer):
@@ -88,8 +88,6 @@ class User_Serilizer(serializers.Serializer):
     user_type=serializers.ChoiceField(choices=['admin','user'])#it will show the choice in the dropdown
     admin_code=serializers.CharField(max_length=100,required=False)
     
-
-
     def validate(self, value):#here we can write all logic in one validate function
         # if 'email' in value and value['email'].split['@']=='gmail.com':
         #     raise serializers.ValidationError("Please Enter the Aycha  Email")
@@ -101,10 +99,8 @@ class User_Serilizer(serializers.Serializer):
 
         if 'age' in value and value['age'] < 18 or value['age'] > 30:
             raise serializers.ValidationError("Age should be between 18 to 30")
-        
 
         return value    
-
 
 
     def validate_age(self, value):#This is custom ValidATOR
@@ -117,4 +113,21 @@ class User_Serilizer(serializers.Serializer):
     #         raise serializers.ValidationError("Please Enter the Aycha  Email")
     #     return value
     
-    
+
+
+class Author_Serilizer(serializers.ModelSerializer):
+    class Meta:
+        model=Author
+        fields="__all__"
+
+class Publisher_Serilizer(serializers.ModelSerializer):
+    class Meta:
+        model=Publisher
+        fields="__all__"
+
+
+
+class Book_Serilizer(serializers.ModelSerializer):
+    class Meta:
+        model=Book
+        fields="__all__"

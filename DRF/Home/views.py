@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.http import JsonResponse
-from .models import Licence_Keys,student
-from Home.serilizer import Licence_key_Serializers,Student_Serialiser,User_Serilizer
+from .models import Licence_Keys,student,Book
+from Home.serilizer import Licence_key_Serializers,Student_Serialiser,User_Serilizer,Book_Serilizer
 # Create your views here.
 @api_view(['GET'])
 def index(request):
@@ -130,6 +130,18 @@ def create_user(request):
         "data":serilizer.data,
     })
 
+@api_view(["GET"])
+def get_book(request):
+    if request.GET.get('id'):
+        querys=Book.objects.get(id=request.GET.get('id'))
+        serilizer=Book_Serilizer(querys)
+    else:
+        querys=Book.objects.all()
+        serilizer=Book_Serilizer(querys,many=True)
+    return Response(({
+        'status':True,
+        'data':serilizer.data,
+    }))
 
 
 
