@@ -1,9 +1,9 @@
 from django.urls import path,include
-from .views import index,create_records,get_records,delete_records,subscribe_key,update_records,ValidateKeyView,create_student,get_student,update_student,create_user,get_book
+from .views import index,create_records,get_records,delete_records,subscribe_key,update_records,ValidateKeyView,create_student,get_student,update_student,create_user,get_book,StudentApi,StudentModel_view
 urlpatterns = [
     path("api/",index,name="index"),
     path("api/subscribe_key",subscribe_key,name="subscribe_key"),
-    path("api/create_records/",create_records,name="Create_records"),
+    path("api/create_records",create_records,name="Create_records"),
     path("api/update_records",update_records,name="Update_records"),
     path("api/get_records/",get_records,name="get_records"),
     path("api/delete_records",delete_records,name="delete_records"),
@@ -13,6 +13,9 @@ urlpatterns = [
     path('api/update_student', update_student, name='update_book'),
     path('api/create_user', create_user, name='create_users'),
     path('api/get_book', get_book, name='get_books'),
+    path('api/v1/Student_Details/', StudentApi.as_view()),
+    path('api/v2/Student_Details/', StudentModel_view.as_view()),
+
 
 
 ] 

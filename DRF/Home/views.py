@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from .models import Licence_Keys,student,Book
 from Home.serilizer import Licence_key_Serializers,Student_Serialiser,User_Serilizer,Book_Serilizer
+from rest_framework import status
+from rest_framework.views import APIView
 # Create your views here.
 @api_view(['GET'])
 def index(request):
@@ -118,13 +120,15 @@ def delete_records(request):
 @api_view(["POST"])
 def create_user(request):
     data=request.data
-    serilizer=User_Serilizer(data=data)
+    # serilizer=User_Serilizer(data=data)
+    serilizer=Book_Serilizer(data=data)
     if not serilizer.is_valid():
         return Response({
             'status':False,
             'Messsage':'Record Not Created',
             "error":serilizer.errors,
         })
+    serilizer.save()
     return  Response({
         'status':True,
         "data":serilizer.data,
@@ -164,7 +168,7 @@ def create_student(request):
         'Messsage':'Record Created'
     })
 
-
+#Validation Serelizer
 @api_view(["GET"])
 def get_student(request):
     if request.GET.get('id'):
@@ -209,9 +213,90 @@ def delete_student(request):
         'Message':'Record Deleted'
     })
 
+# ABout Api View
+class StudentApi(APIView):
+    def post(self,request):
+        data=request.data
+        serilizer=Student_Serialiser(data=data)
+        if not serilizer.is_valid():
+            return Response({
+                'status':False,
+                'Messsage':'Record Not Created',
+                "error":serilizer.errors,
+            })
+        # serilizer.save()
+        # Licence_Keys.objects.create(**data)
+        serilizer.save()
+        return Response({
+            'status':True,
+            'Messsage':'Record Created'
+        })
 
-from rest_framework import status
-from rest_framework.views import APIView
+    def get(self,request):
+        if request.GET.get('id'):
+            querys=student.objects.get(id=request.GET.get('id'))
+            serilizer=Student_Serialiser(querys)
+        else:
+            querys=student.objects.all()
+            serilizer=Student_Serialiser(querys,many=True)
+        return Response(({
+            'status':True,
+            'data':serilizer.data,
+        }))
+
+    def patch(self,request):
+        data=request.data
+        if not request.GET.get('id'):
+            return Response({
+                'status':False,
+                'Messsage':'Record Not Updated',
+                "error":"Id is Required",
+            })
+        keys=student.objects.get(id=request.GET.get('id'))
+        serelizer=Student_Serialiser(keys,data=data,partial=True)
+        if not serelizer.is_valid():
+                return Response({
+                'status':False,
+                'Messsage':'Record Not Updated',
+                "error":serelizer.errors,
+            })
+        serelizer.save()
+        return Response({
+                'status':True,
+                'Messsage':'Record  Updated Sucessfully',
+                "data":serelizer.data,
+            })
+
+    def delete(self,request):
+        student.objects.fillter(id=request.GET.get("id")).delete()
+        return JsonResponse({
+            'status':True,
+            'Message':'Record Deleted'
+        })
+
+# About ListMix,Generic_view,Etc..
+from rest_framework.mixins import ListModelMixin,CreateModelMixin,UpdateModelMixin
+from rest_framework.generics import GenericAPIView
+class StudentModel_view(ListModelMixin,CreateModelMixin,UpdateModelMixin,GenericAPIView):
+    queryset=student.objects.all()
+    serializer_class=Student_Serialiser
+    
+    def get_queryset(self):
+        return student.objects.filter(name__startswith="n")
+
+    def perform_create(self, serializer):
+        return super().perform_create(serializer)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
+
+
+
 class ValidateKeyView(APIView):
     def post(self, request, format=None):
         key = request.data.get('key')
