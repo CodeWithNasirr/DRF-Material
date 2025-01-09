@@ -293,8 +293,45 @@ class StudentModel_view(ListModelMixin,CreateModelMixin,UpdateModelMixin,Generic
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
+# Concrete View...
+from rest_framework import generics
+class StudentListCreate(generics.ListCreateAPIView):
+    queryset= student.objects.all()
+    serializer_class=Student_Serialiser
+
+    def list(self, request, *args, **kwargs):
+        response=super().list(request, *args, **kwargs)
+        response.data={
+            'status':True,
+            'data':response.data,
+            "message":"Student fetched .."
+        }
+        return response
 
 
+
+# ModelViewSet
+from rest_framework import viewsets
+from rest_framework.decorators import action
+class StudentViewSet(viewsets.ModelViewSet):
+    queryset=student.objects.all()
+    serializer_class=Student_Serialiser
+
+    # Action in DRF
+    @action(detail=False,methods=["GET"])
+    def export_student(self,request):
+        return Response({
+            'Status':True,
+            'message':"File Exported",
+            'data':{}
+        })
+    @action(detail=True,methods=["POST"])
+    def send_student_email(self,request,pk):
+        return Response({
+            'Status':True,
+            'message':f"Student send Email id={pk}",
+            'data':{}
+        })
 
 
 class ValidateKeyView(APIView):
