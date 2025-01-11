@@ -145,3 +145,10 @@ class Book_Serilizer(serializers.ModelSerializer):
             book.publisher.add(publisher)
         return book
     
+
+from django.contrib.auth.models import User
+class Register_Serilizer(serializers.Serializer):
+    username=serializers.CharField(max_length=255)
+    password=serializers.CharField(max_length=255)
+    First_name=serializers.CharField(max_length=255)
+    Last_name=serializers.CharField(max_length=255)

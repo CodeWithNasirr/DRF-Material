@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.http import JsonResponse
 from .models import Licence_Keys,student,Book
-from Home.serilizer import Licence_key_Serializers,Student_Serialiser,User_Serilizer,Book_Serilizer
+from Home.serilizer import Licence_key_Serializers,Student_Serialiser,User_Serilizer,Book_Serilizer,Register_Serilizer
 from rest_framework import status
 from rest_framework.views import APIView
 # Create your views here.
@@ -325,12 +325,33 @@ class StudentViewSet(viewsets.ModelViewSet):
             'message':"File Exported",
             'data':{}
         })
+    
     @action(detail=True,methods=["POST"])
     def send_student_email(self,request,pk):
         return Response({
             'Status':True,
             'message':f"Student send Email id={pk}",
             'data':{}
+        })
+
+
+
+#RegisterApi
+class RegisterAPi(APIView):
+
+    def post(self,request):
+        serilizer=Register_Serilizer(data=request.data)
+        if not serilizer.is_valid():
+            return Response({
+                'Status':False,
+                'message':"Key Missing",
+                'data':serilizer.errors
+            })
+        serilizer.save()
+        return Response({
+                'Status':True,
+                'message':"Register Succesfully...",
+                'data':serilizer.data
         })
 
 
