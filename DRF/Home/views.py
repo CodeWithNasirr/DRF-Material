@@ -3,9 +3,11 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.http import JsonResponse
 from .models import Licence_Keys,student,Book
-from Home.serilizer import Licence_key_Serializers,Student_Serialiser,User_Serilizer,Book_Serilizer,Register_Serilizer
+from Home.serilizer import Licence_key_Serializers,Student_Serialiser,User_Serilizer,Book_Serilizer,Register_Serilizer,Login_Serilizer
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 # Create your views here.
 @api_view(['GET'])
 def index(request):
@@ -215,9 +217,12 @@ def delete_student(request):
 
 # ABout Api View
 class StudentApi(APIView):
+    permission_classes=[IsAuthenticated]
+    authentication_classes=[TokenAuthentication]
     def post(self,request):
         data=request.data
         serilizer=Student_Serialiser(data=data)
+        
         if not serilizer.is_valid():
             return Response({
                 'status':False,
@@ -239,10 +244,11 @@ class StudentApi(APIView):
         else:
             querys=student.objects.all()
             serilizer=Student_Serialiser(querys,many=True)
-        return Response(({
+        print(request.user)
+        return Response({
             'status':True,
             'data':serilizer.data,
-        }))
+        })
 
     def patch(self,request):
         data=request.data
@@ -299,6 +305,7 @@ class StudentListCreate(generics.ListCreateAPIView):
     queryset= student.objects.all()
     serializer_class=Student_Serialiser
 
+
     def list(self, request, *args, **kwargs):
         response=super().list(request, *args, **kwargs)
         response.data={
@@ -338,7 +345,6 @@ class StudentViewSet(viewsets.ModelViewSet):
 
 #RegisterApi
 class RegisterAPi(APIView):
-
     def post(self,request):
         serilizer=Register_Serilizer(data=request.data)
         if not serilizer.is_valid():
@@ -353,6 +359,38 @@ class RegisterAPi(APIView):
                 'message':"Register Succesfully...",
                 'data':serilizer.data
         })
+
+
+#LoginAPI
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
+
+class LoginApi(APIView):
+    def post(self,request):
+        serilizer=Login_Serilizer(data=request.data)
+        if serilizer.is_valid():
+            user=authenticate(username=serilizer.data['username'],
+                              password=serilizer.data['password'])
+            if user is None:
+                return Response({
+                    "Status":True,
+                    "Message":"invalid Credentials",
+                    "data":serilizer.errors
+                })
+            token,created=Token.objects.get_or_create(user=user)
+            return Response({
+                    "Status":True,
+                    "Message":"User Token",
+                    "data":{
+                        "Token":token.key
+                    }
+                })
+        return Response({
+                    "Status":False,
+                    "Message":"Key Error ",
+                    "data":serilizer.errors
+                })
+
 
 
 class ValidateKeyView(APIView):
