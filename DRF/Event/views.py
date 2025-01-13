@@ -8,6 +8,10 @@ from Event.models import *
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
+from Event.permission import IsAdmin
+from rest_framework.exceptions import MethodNotAllowed
+from rest_framework.decorators import action
+from django.db.models import Q
 # Create your views here.
 
 class Register_Api(APIView):
@@ -60,9 +64,25 @@ class Login_Api(APIView):
 
 
 
-class Event_ModelViewSet(viewsets.ModelViewSet):
+class Public_Event(viewsets.ModelViewSet):
     queryset=Event.objects.all()
     serializer_class=Event_Serielizer
+    http_method_names=['get']
+
+    @action(detail=False,methods=["GET"])
+    def search_event(self,request):
+        search=request.GET.get("search")
+        query=Event.objects.all()
+        if search:
+            query=query.filter(Q(title__icontains=search)|Q(desc__icontains=search))
+        serializers=Event_Serielizer(query,many=True)
+        return Response({
+                'Status':True,
+                "Message":"Event Feched...",
+                "Data":serializers.data
+        })
+    # def create(self, request, *args, **kwargs):
+    #     raise MethodNotAllowed("Create not Allowed...")
 
 
 
@@ -70,5 +90,29 @@ class PrivateEvent_ModelViewSet(viewsets.ModelViewSet):
     queryset=Event.objects.all()
     serializer_class=Event_Serielizer
     authentication_classes=[TokenAuthentication]
-    permission_classes=[IsAuthenticated]
+    permission_classes=[IsAdmin]
 
+
+
+class Booking_ModelViewSet(viewsets.ModelViewSet):
+    queryset=Booking.objects.all()
+    serializer_class=Booking_Serielizer
+    permission_classes=[IsAuthenticated]
+    authentication_classes=[TokenAuthentication]
+
+    @action(detail=False,methods=["POST"])
+    def create_booking(self,request):
+        data=request.data
+        serializer=TicketBookingSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "Status":True,
+                'Message':"Booking Done",
+                "Data":serializer.data
+            })
+        return Response({
+                "Status":False,
+                'Message':"Booking Not Done",
+                "Data":serializer.errors
+            })

@@ -20,10 +20,11 @@ class Event(models.Model):
 class Ticket(models.Model):
     event=models.ForeignKey(Event,on_delete=models.CASCADE)
     ticket_type=models.CharField(max_length=100,choices=(("VIP","Vip"),("Normal","Normal")))
-    price=models.FloatField()
+    total_person=models.IntegerField(blank=True,null=True)
 
 class Booking(models.Model):
     ticket=models.ForeignKey(Ticket,on_delete=models.CASCADE)
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     status=models.CharField(max_length=100,default="Pending")
-    ticket_type=models.CharField(max_length=100,choices=(("VIP","Vip"),("Normal","Normal")))
+    total_price=models.FloatField(blank=True,null=True)
+
