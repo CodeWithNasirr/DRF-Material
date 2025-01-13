@@ -207,6 +207,7 @@ def update_student(request):
             'Messsage':'Record  Updated Sucessfully',
             "data":serelizer.data,
         })
+
 @api_view(["DELETE"])
 def delete_student(request):
     student.objects.fillter(id=request.GET.get("id")).delete()

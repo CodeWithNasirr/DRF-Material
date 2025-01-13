@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    'Event',
     'Home',
     'rest_framework',
     'django.contrib.admin',
@@ -128,6 +129,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
     BASE_DIR / "static",  # Ensure this directory exists
 ]
+
+
+MEDIA_URL="/media/"
+MEDIA_ROOT=BASE_DIR/'media'
 
 
 # Default primary key field type

@@ -61,19 +61,19 @@ class Student_Serialiser(serializers.ModelSerializer):
     
 
 
-#     def update(self, instance, validated_data):
-#         id=validated_data.get("id",instance.id)
-#         name=validated_data.get("name",instance.name)
-#         age=validated_data.get("age",instance.age)
-#         email=validated_data.get("email",instance.email)
-#         password=validated_data.get("password",instance.password)
-#         instance.id=id
-#         instance.name=name
-#         instance.age=age
-#         instance.email=email
-#         instance.password=password
-#         instance.save()
-#         return instance
+    # def update(self, instance, validated_data):
+    #     id=validated_data.get("id",instance.id)
+    #     name=validated_data.get("name",instance.name)
+    #     age=validated_data.get("age",instance.age)
+    #     email=validated_data.get("email",instance.email)
+    #     password=validated_data.get("password",instance.password)
+    #     instance.id=id
+    #     instance.name=name
+    #     instance.age=age
+    #     instance.email=email
+    #     instance.password=password
+    #     instance.save()
+    #     return instance
 
 #     def create(self, validated_data):
 #         Student=student.objects.create(**validated_data)
@@ -114,7 +114,7 @@ class User_Serilizer(serializers.Serializer):
     #     return value
     
 
-
+# Nested Serilizers..
 class Author_Serilizer(serializers.ModelSerializer):
     class Meta:
         model=Author
@@ -124,8 +124,6 @@ class Publisher_Serilizer(serializers.ModelSerializer):
     class Meta:
         model=Publisher
         fields="__all__"
-
-
 
 class Book_Serilizer(serializers.ModelSerializer):
     author=Author_Serilizer()
@@ -156,7 +154,7 @@ class Register_Serilizer(serializers.Serializer):
     def validate_username(self,username):
         if User.objects.filter(username=username).exists():
             raise serializers.ValidationError("Username already exists...")
-        
+
         return username
         
     def create(self, validated_data):
