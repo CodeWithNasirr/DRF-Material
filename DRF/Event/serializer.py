@@ -50,7 +50,7 @@ class TicketBookingSerializer(serializers.Serializer):
     def validate_user(self,value):
         if not User.objects.filter(id=value).exists():
             raise serializers.ValidationError("User Doesn't Exists..")
-        
+        return value
     # def validate_total_person(self,value):
     #     event=Event.objects.filter()
     #     if value>

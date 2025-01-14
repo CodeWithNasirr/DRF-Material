@@ -116,3 +116,13 @@ class Booking_ModelViewSet(viewsets.ModelViewSet):
                 'Message':"Booking Not Done",
                 "Data":serializer.errors
             })
+    
+    @action(detail=False,methods=["GET"])
+    def get_booking(self,request):
+        query=Booking.objects.all()
+        serializers=Booking_Serielizer(query,many=True)
+        return Response({
+                "Status":True,
+                'Message':"Booking Feteched...",
+                "Data":serializers.data
+            })
